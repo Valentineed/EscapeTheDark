@@ -85,6 +85,11 @@ void AUnrealProjectCharacter::Tick(float DeltaSeconds)
 	{
 		AnimLight(DeltaSeconds);
 	}
+
+	if(GetVelocity().Size() > 0.0f && CanJump())
+	{
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CamShake);
+	}
 }
 
 void AUnrealProjectCharacter::BeginPlay()

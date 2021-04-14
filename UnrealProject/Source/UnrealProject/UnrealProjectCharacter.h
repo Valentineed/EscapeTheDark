@@ -8,6 +8,7 @@
 
 class UBoxComponent;
 class UPointLightComponent;
+class UCameraShake;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
 class UInputComponent;
 
@@ -109,6 +110,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Keys)
 		bool BagVisibility = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shaking)
+	TSubclassOf<UCameraShake> CamShake;
+	
 	bool bLightIsActive = false;
 protected:
 
