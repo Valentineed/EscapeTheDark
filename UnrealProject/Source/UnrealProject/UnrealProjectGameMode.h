@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "Item.h"
 #include "GameFramework/GameModeBase.h"
 #include "UnrealProjectGameMode.generated.h"
 
@@ -83,6 +85,8 @@ protected:
 	void	PlaceRoomLights();
 
 	void	GenerateItems();
+	void	PlaceItem(int x, int y, int Type);
+	TSubclassOf<AItem>	GetItemType(int index) const;
 
 	int*	Grid;
 	int*	RoomsGrid;
@@ -124,6 +128,25 @@ protected:
 	/* Spawn */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class AEndDoor> EndDoorType = nullptr;
+
+	/* Items */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AItem> Item1Type = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AItem> Item2Type = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AItem> Item3Type = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AItem> Item4Type = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AItem> Item5Type = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AItem> Item6Type = nullptr;
 
 	/* Maze modules */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

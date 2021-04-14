@@ -32,6 +32,7 @@ AUnrealProjectGameMode::AUnrealProjectGameMode() : Super()
 
     Grid = new int[Width * Height];
     RoomsGrid = new int[Width * Height];
+    BonusesGrid = new int[Width * Height];
 
     Rooms.Reserve(5);
     Rooms.Add(CreateDefaultSubobject<UMazeRoom>(FName("Room0")));
@@ -39,7 +40,6 @@ AUnrealProjectGameMode::AUnrealProjectGameMode() : Super()
     Rooms.Add(CreateDefaultSubobject<UMazeRoom>(FName("Room2")));
     Rooms.Add(CreateDefaultSubobject<UMazeRoom>(FName("Room3")));
     Rooms.Add(CreateDefaultSubobject<UMazeRoom>(FName("Room4")));
-
 }
 
 void AUnrealProjectGameMode::BeginPlay()
@@ -67,6 +67,8 @@ void AUnrealProjectGameMode::BeginPlay()
     GenerateDoors();
 
     CreateModules();
+
+    GenerateItems();
 
     GenerateLights();
 
@@ -242,6 +244,7 @@ void AUnrealProjectGameMode::ResetGrid() const
     {
         Grid[i] = WALL;
         RoomsGrid[i] = -1;
+        BonusesGrid[i] = 0;
     }
 }
 
@@ -798,13 +801,57 @@ void AUnrealProjectGameMode::GenerateItems()
         bool bItemPlaced = false;
         while(!bItemPlaced)
         {
-            int RoomIndex = FMath::RandRange(0, Rooms.Num());
+            const int RoomIndex = FMath::RandRange(0, Rooms.Num() - 1);
 
             if(Rooms[RoomIndex]->ItemCount < MaxItemPerRoom)
             {
-                
+                if(!bItemPlaced)
+                {
+                    const int ItemX = Rooms[RoomIndex]->CurrentX + FMath::RandRange(0, Rooms[RoomIndex]->RoomWidth - 1);
+                    const int ItemY = Rooms[RoomIndex]->CurrentY + FMath::RandRange(0, Rooms[RoomIndex]->RoomHeight - 1);
+
+                    if(BonusesGrid[XYToIndex(ItemX, ItemY)] == 0)
+                    {
+                        PlaceItem(ItemX, ItemY, i);
+                        bItemPlaced = true;
+                        Rooms[RoomIndex]->ItemCount++;
+                    }
+                }
             }
         }
+    }
+}
+
+void AUnrealProjectGameMode::PlaceItem(const int x, const int y, const int Type)
+{
+    BonusesGrid[XYToIndex(x, y)] = Type;
+
+    FActorSpawnParameters SpawnParameters;
+    SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+    const FTransform Transform(FRotator::ZeroRotator, FVector{ MazeX + x * ModuleSize, MazeY + y * ModuleSize, 50 });
+
+    GetWorld()->SpawnActor(GetItemType(Type + 1), &Transform, SpawnParameters);
+}
+
+TSubclassOf<AItem> AUnrealProjectGameMode::GetItemType(int index) const
+{
+    switch (index)
+    {
+    case 1:
+        return Item1Type;
+    case 2:
+        return Item2Type;
+    case 3:
+        return Item3Type;
+    case 4:
+        return Item4Type;
+    case 5:
+        return Item5Type;
+    case 6:
+        return Item6Type;
+    default:
+        return nullptr;
     }
 }
 
