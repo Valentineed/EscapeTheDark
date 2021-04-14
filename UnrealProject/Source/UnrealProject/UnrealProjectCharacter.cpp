@@ -67,6 +67,9 @@ AUnrealProjectCharacter::AUnrealProjectCharacter()
 	//CreateSound
 	Sounds = CreateDefaultSubobject<USceneComponent>(FName("Sounds"));
 	SoundMatch = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("MatchSound")));
+	SoundBreathe = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("BreatheSound")));
+	SoundWalk = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("WalkSound")));
+	SoundPickUp = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("PickUpSound")));
 	if (Sounds != nullptr)
 	{
 		Sounds->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
@@ -74,6 +77,21 @@ AUnrealProjectCharacter::AUnrealProjectCharacter()
 		{
 			SoundMatch->SetupAttachment(Sounds);
 			SoundMatch->bAutoActivate = false;
+		}
+		if(SoundBreathe)
+		{
+			SoundBreathe->SetupAttachment(Sounds);
+			SoundBreathe->bAutoActivate = false;
+		}
+		if(SoundWalk)
+		{
+			SoundWalk->SetupAttachment(Sounds);
+			SoundWalk->bAutoActivate = false;
+		}
+		if(SoundPickUp)
+		{
+			SoundPickUp->SetupAttachment(Sounds);
+			SoundPickUp->bAutoActivate = false;
 		}
 	}	
 }
@@ -198,6 +216,7 @@ void AUnrealProjectCharacter::ActiveInteractionBox()
 				PickItem = true;
 				IndexItem = item->Index;
 				item->Destroy();
+				SoundPickUp->Play();
 			}
 			else
 			{
@@ -206,6 +225,7 @@ void AUnrealProjectCharacter::ActiveInteractionBox()
 			  {
 				  NumberOfMatches += NmbrMatchesToAdd;
 				  match->Destroy();
+				  SoundPickUp->Play();
 			  }
 			}
 		}
@@ -244,7 +264,26 @@ void AUnrealProjectCharacter::ShakeMove()
 {
 	if (GetVelocity().Size() > 0.0f && CanJump())
 	{
+		if (SoundBreathe->IsPlaying())
+		{
+			SoundBreathe->Stop();
+		}
+		if(!SoundWalk->IsPlaying())
+		{
+			SoundWalk->Play();
+		}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CamShake);
+	}
+	else
+	{
+		if(!SoundBreathe->IsPlaying())
+		{
+			SoundBreathe->Play();
+		}
+		if (SoundWalk->IsPlaying())
+		{
+			SoundWalk->Stop();
+		}
 	}
 }
 

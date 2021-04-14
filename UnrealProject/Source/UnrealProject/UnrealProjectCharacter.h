@@ -36,6 +36,16 @@ class AUnrealProjectCharacter : public ACharacter
 
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 		UAudioComponent* SoundMatch = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* SoundBreathe = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* SoundWalk = nullptr;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* SoundPickUp = nullptr;
+	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "InteractionBox")
 		UBoxComponent* InteractionBox = nullptr;
