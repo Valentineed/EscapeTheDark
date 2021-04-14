@@ -5,9 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "UnrealProjectCharacter.generated.h"
-class AUnrealProjectCharacter;
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemPickUp, AUnrealProjectCharacter*, Player);
 
 class UBoxComponent;
 class UPointLightComponent;
@@ -46,7 +43,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
-	FOnItemPickUp OnItemPickUp;
 protected:
 	virtual void BeginPlay();
 

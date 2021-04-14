@@ -49,10 +49,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<int>	GetItems() const;
 
-	void	PlayerRegister(AUnrealProjectCharacter* Player) const;
-
 	UPROPERTY(BlueprintAssignable)
 	FOnWin OnWin;
+
+	void	CheckWinConditions(AUnrealProjectCharacter* Player);
 
 protected:
 	friend	UMazeRoom;
@@ -82,11 +82,11 @@ protected:
 	void	PlaceCorridorSwitch(AActor* Light, int x, int y);
 	void	PlaceRoomLights();
 
-	UFUNCTION()
-	void	CheckWinConditions(AUnrealProjectCharacter* Player);
+	void	GenerateItems();
 
-	int* Grid;
-	int* RoomsGrid;
+	int*	Grid;
+	int*	RoomsGrid;
+	int* BonusesGrid;
 	TArray<FVector2D>	LightsLocation;
 
 	LogicItens* NeededItems;
@@ -176,4 +176,10 @@ protected:
 	 */
 	UPROPERTY(EditAnywhere)
 	float	SwitchHeight = 150;
+
+    /**
+	 * Maximum number of Item per room.
+	 */
+	UPROPERTY(EditAnywhere)
+	int		MaxItemPerRoom = 3;
 };

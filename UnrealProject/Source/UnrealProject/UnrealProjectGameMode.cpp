@@ -71,14 +71,6 @@ void AUnrealProjectGameMode::BeginPlay()
     GenerateLights();
 
     SetupSpawn();
-
-    auto* Player = Cast<AUnrealProjectCharacter>(UGameplayStatics::GetPlayerPawn(this, 1));
-
-    if(Player)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Delegate"))
-        Player->OnItemPickUp.AddDynamic(this, &AUnrealProjectGameMode::CheckWinConditions);
-    }
 }
 
 void AUnrealProjectGameMode::GenerateMaze() const
@@ -91,15 +83,6 @@ void AUnrealProjectGameMode::GenerateMaze() const
 TArray<int> AUnrealProjectGameMode::GetItems() const
 {
     return NeededItems->ItensConditionWin;
-}
-
-void AUnrealProjectGameMode::PlayerRegister(AUnrealProjectCharacter* Player) const
-{
-    if (Player)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Delegate"))
-            Player->OnItemPickUp.AddDynamic(this, &AUnrealProjectGameMode::CheckWinConditions);
-    }
 }
 
 void AUnrealProjectGameMode::DrawRooms()
@@ -803,6 +786,23 @@ void AUnrealProjectGameMode::PlaceRoomLights()
             for(int j = 0; j < Lights.Num(); j++)
             {
                 Switches[i]->AddNeon(Lights[j]);
+            }
+        }
+    }
+}
+
+void AUnrealProjectGameMode::GenerateItems()
+{
+    for(int i = 0; i < 6; i++)
+    {
+        bool bItemPlaced = false;
+        while(!bItemPlaced)
+        {
+            int RoomIndex = FMath::RandRange(0, Rooms.Num());
+
+            if(Rooms[RoomIndex]->ItemCount < MaxItemPerRoom)
+            {
+                
             }
         }
     }

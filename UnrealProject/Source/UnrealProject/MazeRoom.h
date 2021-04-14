@@ -45,6 +45,8 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	int	DoorCount = 0;
 
+	int ItemCount = 0;
+
 	static std::random_device Rd;
 	static std::mt19937 Gen;
 };

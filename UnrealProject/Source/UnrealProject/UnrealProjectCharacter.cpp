@@ -92,10 +92,6 @@ void AUnrealProjectCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-
-	auto* GameMode = Cast<AUnrealProjectGameMode>(UGameplayStatics::GetGameMode(this));
-
-	GameMode->PlayerRegister(this);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -204,7 +200,6 @@ void AUnrealProjectCharacter::ActiveInteractionBox()
 				PickItem = true;
 				IndexItem = item->Index;
 				item->Destroy();
-				OnItemPickUp.Broadcast(this);
 			}
 			else
 			{
