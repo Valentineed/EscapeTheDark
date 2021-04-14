@@ -42,7 +42,10 @@ class AUnrealProjectCharacter : public ACharacter
 
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 		UAudioComponent* SoundWalk = nullptr;
-	
+
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* SoundRespirationWalk = nullptr;
+
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 		UAudioComponent* SoundPickUp = nullptr;
 	

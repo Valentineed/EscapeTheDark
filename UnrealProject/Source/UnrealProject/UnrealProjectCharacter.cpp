@@ -70,6 +70,7 @@ AUnrealProjectCharacter::AUnrealProjectCharacter()
 	SoundBreathe = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("BreatheSound")));
 	SoundWalk = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("WalkSound")));
 	SoundPickUp = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("PickUpSound")));
+	SoundRespirationWalk = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("RespirationWalkSound")));
 	if (Sounds != nullptr)
 	{
 		Sounds->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
@@ -88,10 +89,15 @@ AUnrealProjectCharacter::AUnrealProjectCharacter()
 			SoundWalk->SetupAttachment(Sounds);
 			SoundWalk->bAutoActivate = false;
 		}
-		if(SoundPickUp)
+		if (SoundPickUp)
 		{
 			SoundPickUp->SetupAttachment(Sounds);
 			SoundPickUp->bAutoActivate = false;
+		}
+		if (SoundRespirationWalk)
+		{
+			SoundRespirationWalk->SetupAttachment(Sounds);
+			SoundRespirationWalk->bAutoActivate = false;
 		}
 	}	
 }
@@ -268,9 +274,13 @@ void AUnrealProjectCharacter::ShakeMove()
 		{
 			SoundBreathe->Stop();
 		}
-		if(!SoundWalk->IsPlaying())
+		if (!SoundWalk->IsPlaying())
 		{
 			SoundWalk->Play();
+		}
+		if (!SoundRespirationWalk->IsPlaying())
+		{
+			SoundRespirationWalk->Play();
 		}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CamShake);
 	}
@@ -279,6 +289,10 @@ void AUnrealProjectCharacter::ShakeMove()
 		if(!SoundBreathe->IsPlaying())
 		{
 			SoundBreathe->Play();
+		}
+		if (SoundWalk->IsPlaying())
+		{
+			SoundWalk->Stop();
 		}
 		if (SoundWalk->IsPlaying())
 		{
