@@ -86,7 +86,10 @@ void AUnrealProjectCharacter::Tick(float DeltaSeconds)
 		AnimLight(DeltaSeconds);
 	}
 
-	ShakeMove();
+	if(GetVelocity().Size() > 0.0f && CanJump())
+	{
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CamShake);
+	}
 }
 
 void AUnrealProjectCharacter::BeginPlay()
@@ -103,6 +106,10 @@ void AUnrealProjectCharacter::SetupPlayerInputComponent(class UInputComponent* P
 {
 	// set up gameplay key bindings
 	check(PlayerInputComponent);
+
+	// Bind jump events
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	//Bind light of player
 	PlayerInputComponent->BindAction("ActiveLight", IE_Pressed, this, &AUnrealProjectCharacter::ActiveLight);
@@ -242,10 +249,7 @@ void AUnrealProjectCharacter::Walk()
 
 void AUnrealProjectCharacter::ShakeMove()
 {
-	if (GetVelocity().Size() > 0.0f && CanJump())
-	{
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CamShake);
-	}
+//FirstPersonCameraComponent->came
 }
 
 void AUnrealProjectCharacter::TurnAtRate(float Rate)
