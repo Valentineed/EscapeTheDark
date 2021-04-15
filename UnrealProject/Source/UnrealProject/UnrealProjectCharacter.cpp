@@ -5,12 +5,14 @@
 #include "InteractiveObject.h"
 #include "Item.h"
 #include "Matches.h"
+#include "EndDoor.h"
 #include "UnrealProjectProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "MotionControllerComponent.h"
 #include "UnrealProjectGameMode.h"
 #include "Blueprint/UserWidget.h"
@@ -92,6 +94,21 @@ void AUnrealProjectCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
+	AUnrealProjectGameMode* GameMode = Cast<AUnrealProjectGameMode>(UGameplayStatics::GetGameMode(this));
+
+	if(GameMode)
+	{
+
+		const auto Spawn = GameMode->GetSpawnLocation() * GameMode->GetModuleSize();
+		UE_LOG(LogTemp, Warning, TEXT("Spawn Player %f : %f"), Spawn.X, Spawn.Y);
+
+		SetActorLocation(Spawn);
+
+		const auto Rotation = UKismetMathLibrary::FindLookAtRotation(Spawn, GameMode->EndDoor->GetActorLocation());
+
+		this->SetActorRotation(Rotation);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

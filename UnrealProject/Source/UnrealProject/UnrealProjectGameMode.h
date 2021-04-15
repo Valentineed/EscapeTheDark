@@ -14,6 +14,7 @@
 #define EAST	3
 
 
+class AEndDoor;
 class AUnrealProjectCharacter;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWin);
 
@@ -46,15 +47,19 @@ public:
 	 */
 	void	GenerateMaze() const;
 
+	void	CheckWinConditions(AUnrealProjectCharacter* Player);
+
 	float	GetModuleSize() const { return ModuleSize; }
 
 	UFUNCTION(BlueprintCallable)
 	TArray<int>	GetItems() const;
 
+	FVector	GetSpawnLocation() const;
+
+	AEndDoor* EndDoor = nullptr;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnWin OnWin;
-
-	void	CheckWinConditions(AUnrealProjectCharacter* Player);
 
 protected:
 	friend	UMazeRoom;
@@ -73,24 +78,29 @@ protected:
 	void	BreakWall(int x, int y) const;
 
 	void	GenerateDoors();
-	void	CreateWall(FTransform Transform);
+	void	CreateWall(FTransform Transform) const;
 
 	void	GenerateLights();
 
 	void	SetupSpawn();
-	bool	IsRoom(int x, int y);
+	bool	IsRoom(int x, int y) const;
 	bool	LightNotNear(int x, int y);
 	AActor*	PlaceLight(float x, float y) const;
-	void	PlaceCorridorSwitch(AActor* Light, int x, int y);
+	void	PlaceCorridorSwitch(AActor* Light, int x, int y) const;
 	void	PlaceRoomLights();
 
 	void	GenerateItems();
-	void	PlaceItem(int x, int y, int Type);
+	void	PlaceItem(int x, int y, int Type) const;
 	TSubclassOf<AItem>	GetItemType(int index) const;
+
+	void	GenerateObjects();
+
+	void	SpawnEnemy();
 
 	int*	Grid;
 	int*	RoomsGrid;
-	int* BonusesGrid;
+	int*	BonusesGrid;
+	int*	ObjectsGrid; // eligible objects cases
 	TArray<FVector2D>	LightsLocation;
 
 	LogicItens* NeededItems;
@@ -124,6 +134,13 @@ protected:
 	 */
 	UPROPERTY(EditAnywhere)
 	int	ModuleSize = 300;
+
+	UPROPERTY(EditAnywhere)
+	float	MinEnemySpawnDistanceToPlayer = 1000.f;
+
+	/* Enemy */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AEnemyCharacter> EnemyType = nullptr;
 
 	/* Spawn */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

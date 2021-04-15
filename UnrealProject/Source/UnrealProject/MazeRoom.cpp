@@ -38,8 +38,8 @@ void UMazeRoom::SetWalls(AUnrealProjectGameMode* Mode, int* Walls, const int Hei
 
 bool UMazeRoom::GenerateRoom()
 {
-    const std::uniform_int_distribution<int> DisHeight(0, GameMode->Height - RoomHeight - 1);
-    const std::uniform_int_distribution<int> DisWidth(0, GameMode->Width - RoomWidth - 1);
+    const std::uniform_int_distribution<int> DisHeight(1, GameMode->Height - RoomHeight - 2);
+    const std::uniform_int_distribution<int> DisWidth(1, GameMode->Width - RoomWidth - 2);
 
     for(int i = 0; i < 50; i++)
     {
@@ -79,6 +79,7 @@ void UMazeRoom::CreateRoom(const int x, const int y)
             {
                 GameMode->Grid[GameMode->XYToIndex(i + x, j + y)] = GROUND;
                 GameMode->RoomsGrid[GameMode->XYToIndex(i + x, j + y)] = RoomIndex;
+                GameMode->ObjectsGrid[GameMode->XYToIndex(i + x, j + y)] = 2;
             }
         }
     }
