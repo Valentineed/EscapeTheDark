@@ -5,7 +5,6 @@
 #include "InteractiveObject.h"
 #include "Item.h"
 #include "Matches.h"
-#include "UnrealProjectProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -55,7 +54,6 @@ AUnrealProjectCharacter::AUnrealProjectCharacter()
 		Light->SetupAttachment(FirstPersonCameraComponent);
 		Light->SetIntensity(0);
 	}
-
 	InteractionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractiveBox"));
 	if(InteractionBox)
 	{
@@ -63,6 +61,7 @@ AUnrealProjectCharacter::AUnrealProjectCharacter()
 		InteractionBox->SetCollisionProfileName(TEXT("Trigger"));
 		InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &AUnrealProjectCharacter::BeginOverlapDetection);
 	}
+
 	
 	//CreateSound
 	Sounds = CreateDefaultSubobject<USceneComponent>(FName("Sounds"));

@@ -81,9 +81,6 @@ public:
 		float LightBrightess = 1000.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerLight)
-		float LightBrightessLimit = 300.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerLight)
 		float StartLightBrightess = 100000.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerLight)
@@ -188,6 +185,5 @@ private:
 	FTimerHandle HitTimeHandleInteraction;
 	
 	float AlphaLerpLight = 0.0f;
-
 };
 
