@@ -73,6 +73,10 @@ AUnrealProjectCharacter::AUnrealProjectCharacter()
 	SoundWalk = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("WalkSound")));
 	SoundPickUp = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("PickUpSound")));
 	SoundRespirationWalk = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("RespirationWalkSound")));
+	Ambient01 = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("Ambient01Sound")));
+	Ambient02 = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("Ambient02Sound")));
+	Ambient03 = CreateDefaultSubobject<UAudioComponent>(FName(TEXT("Ambient03Sound")));
+	
 	if (Sounds != nullptr)
 	{
 		Sounds->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
@@ -100,6 +104,21 @@ AUnrealProjectCharacter::AUnrealProjectCharacter()
 		{
 			SoundRespirationWalk->SetupAttachment(Sounds);
 			SoundRespirationWalk->bAutoActivate = false;
+		}
+		if(Ambient01)
+		{
+			Ambient01->SetupAttachment(Sounds);
+			Ambient01->bAutoActivate = false;
+		}
+		if(Ambient02)
+		{
+			Ambient02->SetupAttachment(Sounds);
+			Ambient02->bAutoActivate = false;
+		}
+		if(Ambient03)
+		{
+			Ambient03->SetupAttachment(Sounds);
+			Ambient03->bAutoActivate = false;
 		}
 	}	
 }
@@ -134,6 +153,10 @@ void AUnrealProjectCharacter::BeginPlay()
 		const auto Rotation = UKismetMathLibrary::FindLookAtRotation(Spawn, GameMode->EndDoor->GetActorLocation());
 
 		this->SetActorRotation(Rotation);
+	}
+	if(Ambient01)
+	{
+		Ambient01->Play();
 	}
 }
 
@@ -243,19 +266,46 @@ void AUnrealProjectCharacter::ActiveInteractionBox()
 				IndexItem = item->Index;
 				item->Destroy();
 				SoundPickUp->Play();
+				if (Itens.Num() == NmbroffItem01)
+				{
+					if (Ambient01)
+					{
+						Ambient01->Deactivate();
+					}
+					if (Ambient02)
+					{
+						Ambient02->Play();
+					}
+				}
+				else if (Itens.Num() == NmbroffItem02)
+				{
+					if (Ambient02)
+					{
+						Ambient02->Deactivate();
+					}
+					if (Ambient03)
+					{
+						Ambient03->Play();
+					}
+				}
 			}
 			else
 			{
-			  auto* match = Cast<AMatches>(actor);
-			  if(match)
-			  {
-				  NumberOfMatches += NmbrMatchesToAdd;
-				  match->Destroy();
-				  SoundPickUp->Play();
-			  }
+				auto* match = Cast<AMatches>(actor);
+				if(match)
+				{
+					NumberOfMatches += NmbrMatchesToAdd;
+					match->Destroy();
+					SoundPickUp->Play();
+				}
 			}
 		}
     }
+}
+
+void AUnrealProjectCharacter::ChoseMusic()
+{
+	
 }
 
 void AUnrealProjectCharacter::DesactiveInteractionBox()

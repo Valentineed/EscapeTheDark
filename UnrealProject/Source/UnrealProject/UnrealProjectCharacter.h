@@ -49,6 +49,15 @@ class AUnrealProjectCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 		UAudioComponent* SoundPickUp = nullptr;
 	
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* Ambient01 = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* Ambient02 = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* Ambient03 = nullptr;
+	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "InteractionBox")
 		UBoxComponent* InteractionBox = nullptr;
@@ -107,6 +116,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Matches)
 		int NmbrMatchesToAdd = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SoundAmbient)
+		int NmbroffItem01 = 3;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SoundAmbient)
+		int NmbroffItem02 = 5;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Itens)
 		TArray<int> Itens;
@@ -173,7 +188,7 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
-
+	void ChoseMusic();
 private:
 	UFUNCTION()
 		virtual void BeginOverlapDetection(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -185,5 +200,6 @@ private:
 	FTimerHandle HitTimeHandleInteraction;
 	
 	float AlphaLerpLight = 0.0f;
+
 };
 
