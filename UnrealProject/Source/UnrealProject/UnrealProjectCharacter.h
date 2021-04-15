@@ -8,6 +8,7 @@
 
 class UBoxComponent;
 class UPointLightComponent;
+class UCameraShake;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
 class UInputComponent;
 
@@ -35,6 +36,19 @@ class AUnrealProjectCharacter : public ACharacter
 
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 		UAudioComponent* SoundMatch = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* SoundBreathe = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* SoundWalk = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* SoundRespirationWalk = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		UAudioComponent* SoundPickUp = nullptr;
+	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "InteractionBox")
 		UBoxComponent* InteractionBox = nullptr;
@@ -109,6 +123,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Keys)
 		bool BagVisibility = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shaking)
+	TSubclassOf<UCameraShake> CamShake;
+	
 	bool bLightIsActive = false;
 protected:
 

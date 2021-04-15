@@ -40,7 +40,7 @@ AEnemyCharacter::AEnemyCharacter()
 		if (SoundDefault)
 		{
 			SoundDefault->SetupAttachment(Sounds);
-			SoundDefault->bAutoActivate = false;
+			SoundDefault->bAutoActivate = true;
 		}
 	}
 }
