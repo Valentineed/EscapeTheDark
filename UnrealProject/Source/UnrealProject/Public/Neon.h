@@ -13,27 +13,29 @@ class UNREALPROJECT_API ANeon : public AActor
 	GENERATED_BODY()
 
 public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collider")
-	UBoxComponent* Collision = nullptr;
-	
+		UBoxComponent* Collision = nullptr;
+
 	/** Pawn mesh*/
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class UStaticMeshComponent* Mesh = nullptr;
+		class UStaticMeshComponent* Mesh = nullptr;
 
 	/**/
 	UPROPERTY(VisibleDefaultsOnly, Category = Light)
-	class USpotLightComponent* Light = nullptr;
+		class USpotLightComponent* Light = nullptr;
 
 	UPROPERTY(VisibleAnywhere)
-	class UParticleSystemComponent* Particle;
+		class UParticleSystemComponent* Particle;
 
-public:	
+public:
 	// Sets default values for this actor's properties
 	ANeon();
 	void StartAnimation();
 
 	bool IsVisible();
 	void ActiveLight();
+	void ActiveLightAnim();
 	void AnimationEnd();
 	void DesactiveLight();
 
@@ -47,8 +49,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		UAudioComponent* SoundAnim = nullptr;
 
+	UPROPERTY(VisibleAnywhere)
+		UAudioComponent* SoundExplode = nullptr;
 
-public:	
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -76,5 +81,7 @@ private:
 	bool bActiveLight = true;
 
 	bool btest = false;
+
+	bool bStopAnimation = false;
 
 };
