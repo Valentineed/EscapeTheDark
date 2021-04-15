@@ -210,9 +210,9 @@ void AUnrealProjectGameMode::CreateModules() const
                     ObjectsGrid[XYToIndex(jWidth, iHeight - 1)] = 1;
                     ModuleClass = DeadEndModule;
                 }
-                else if (WallsCount == 4) // Crossroad
+                else if (WallsCount == 0) // Crossroad
                 {
-                    // not needed for now
+                    ModuleClass = CrossroadsModule;
                 }
 
                 if(ModuleClass != nullptr)
@@ -874,7 +874,7 @@ void AUnrealProjectGameMode::SpawnEnemy()
             FActorSpawnParameters SpawnParameters;
             SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-            const FTransform Transform(FRotator::ZeroRotator, FVector{ MazeX + EnemyX * ModuleSize, MazeY + EnemyY * ModuleSize, 0 });
+            const FTransform Transform(FRotator::ZeroRotator, FVector{ MazeX + EnemyX * ModuleSize, MazeY + EnemyY * ModuleSize, 50 });
 
             GetWorld()->SpawnActor(EnemyType, &Transform, SpawnParameters);
 
