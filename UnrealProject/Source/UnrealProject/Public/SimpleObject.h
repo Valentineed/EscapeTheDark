@@ -4,24 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ObjectsComposition.generated.h"
+#include "SimpleObject.generated.h"
 
 UCLASS()
-class UNREALPROJECT_API AObjectsComposition : public AActor
+class UNREALPROJECT_API ASimpleObject : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AObjectsComposition();
+	ASimpleObject();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	USceneComponent* Root = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UChildActorComponent* Matches = nullptr;
 };

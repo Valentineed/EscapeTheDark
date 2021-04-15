@@ -6,6 +6,8 @@
 #include <ctime>
 #include <string>
 
+#include "ObjectsComposition.h"
+#include "SimpleObject.h"
 #include "EnemyCharacter.h"
 #include "EndDoor.h"
 #include "LogicItens.h"
@@ -34,7 +36,7 @@ AUnrealProjectGameMode::AUnrealProjectGameMode() : Super()
     Grid = new int[Width * Height];
     RoomsGrid = new int[Width * Height];
     BonusesGrid = new int[Width * Height];
-    ObjectsGrid = new int[Width * Height];
+    ObjectsGrid = new EObjectPlacement[Width * Height];
 
     NeededItems = new LogicItens;
 
@@ -73,6 +75,8 @@ void AUnrealProjectGameMode::BeginPlay()
     GenerateItems();
 
     GenerateLights();
+
+    GenerateObjects();
 
     SetupSpawn();
 
@@ -207,12 +211,17 @@ void AUnrealProjectGameMode::CreateModules() const
                     {
                         ModuleRotation.Yaw = -90;
                     }
-                    ObjectsGrid[XYToIndex(jWidth, iHeight - 1)] = 1;
+                    ObjectsGrid[XYToIndex(jWidth, iHeight - 1)] = DEAD_END;
                     ModuleClass = DeadEndModule;
                 }
                 else if (WallsCount == 0) // Crossroad
                 {
                     ModuleClass = CrossroadsModule;
+
+                    if(RoomsGrid[XYToIndex(jWidth, iHeight)] != 0) // Room
+                    {
+                        ObjectsGrid[XYToIndex(jWidth, iHeight)] = ROOM_MIDDLE;
+                    }
                 }
 
                 if(ModuleClass != nullptr)
@@ -237,6 +246,7 @@ void AUnrealProjectGameMode::ResetGrid() const
         Grid[i] = WALL;
         RoomsGrid[i] = -1;
         BonusesGrid[i] = 0;
+        ObjectsGrid[i] = EMPTY;
     }
 }
 
@@ -336,7 +346,7 @@ int AUnrealProjectGameMode::NumberOfWalls(const int x, const int y, const EModul
 
     if(x - 1 < 0 || Grid[XYToIndex(x - 1, y)] != ModuleType)
     {
-            WallsCount++;
+        WallsCount++;
     }
 
     if (x + 1 > Width || Grid[XYToIndex(x + 1, y)] != ModuleType)
@@ -346,12 +356,12 @@ int AUnrealProjectGameMode::NumberOfWalls(const int x, const int y, const EModul
 
     if (y - 1 < 0 || Grid[XYToIndex(x, y - 1)] != ModuleType)
     {
-            WallsCount++;
+        WallsCount++;
     }
 
     if (y + 1 > Height || Grid[XYToIndex(x, y + 1)] != ModuleType)
     {
-            WallsCount++;
+        WallsCount++;
     }
 
     return WallsCount;
@@ -429,7 +439,7 @@ void AUnrealProjectGameMode::SetupSpawn()
     {
         if (Grid[XYToIndex(SpawnRoom->CurrentX + SpawnRoom->RoomWidth, SpawnRoom->CurrentY + j)] == WALL) // Valid door
         {
-            ObjectsGrid[XYToIndex(SpawnRoom->CurrentX + SpawnRoom->RoomWidth - 1, SpawnRoom->CurrentY + j)] = 0;
+            ObjectsGrid[XYToIndex(SpawnRoom->CurrentX + SpawnRoom->RoomWidth - 1, SpawnRoom->CurrentY + j)] = EMPTY;
 
             Transform = FTransform(DoorRotation, FVector{ MazeX + (SpawnRoom->CurrentX + SpawnRoom->RoomWidth - 0.5f) * ModuleSize, MazeY + (SpawnRoom->CurrentY + j) * ModuleSize, 0 });
 
@@ -443,7 +453,7 @@ void AUnrealProjectGameMode::SetupSpawn()
     {
         if (Grid[XYToIndex(SpawnRoom->CurrentX - 1, SpawnRoom->CurrentY + j)] == WALL)
         {
-            ObjectsGrid[XYToIndex(SpawnRoom->CurrentX, SpawnRoom->CurrentY + j)] = 0;
+            ObjectsGrid[XYToIndex(SpawnRoom->CurrentX, SpawnRoom->CurrentY + j)] = EMPTY;
 
             DoorRotation.Yaw = 180;
             Transform = FTransform(DoorRotation, FVector{ MazeX + (SpawnRoom->CurrentX - 0.5f) * ModuleSize, MazeY + (SpawnRoom->CurrentY + j) * ModuleSize, 0 });
@@ -458,7 +468,7 @@ void AUnrealProjectGameMode::SetupSpawn()
     {
         if (Grid[XYToIndex(SpawnRoom->CurrentX + j, SpawnRoom->CurrentY - 1)] == WALL) // Valid door
         {
-            ObjectsGrid[XYToIndex(SpawnRoom->CurrentX + j, SpawnRoom->CurrentY)] = 0;
+            ObjectsGrid[XYToIndex(SpawnRoom->CurrentX + j, SpawnRoom->CurrentY)] = EMPTY;
 
             DoorRotation.Yaw = -90;
             Transform = FTransform(DoorRotation, FVector{ MazeX + (SpawnRoom->CurrentX + j) * ModuleSize, MazeY + (SpawnRoom->CurrentY - 0.5f) * ModuleSize, 0 });
@@ -472,7 +482,7 @@ void AUnrealProjectGameMode::SetupSpawn()
     {
         if (Grid[XYToIndex(SpawnRoom->CurrentX + j, SpawnRoom->CurrentY + SpawnRoom->RoomHeight)] == WALL) // Valid door
         {
-            ObjectsGrid[XYToIndex(SpawnRoom->CurrentX + j, SpawnRoom->CurrentY)] = 0;
+            ObjectsGrid[XYToIndex(SpawnRoom->CurrentX + j, SpawnRoom->CurrentY)] = EMPTY;
 
             DoorRotation.Yaw = 90;
             Transform = FTransform(DoorRotation, FVector{ MazeX + (SpawnRoom->CurrentX + j) * ModuleSize, MazeY + (SpawnRoom->CurrentY + SpawnRoom->RoomHeight - 0.5f) * ModuleSize, 0 });
@@ -849,18 +859,138 @@ void AUnrealProjectGameMode::GenerateObjects()
 {
     const FVector Spawn = GetSpawnLocation();
 
-    ObjectsGrid[XYToIndex(Spawn.X, Spawn.Y)] = 0;
+    ObjectsGrid[XYToIndex(Spawn.X, Spawn.Y)] = EMPTY;
 
     for(int i = 0; i < Width; i++)
     {
         for(int j = 0; j < Height; j++)
         {
-            
+            switch(ObjectsGrid[XYToIndex(i, j)])
+            {
+            case ROOM_MIDDLE:
+                GenerateRoomMiddleObject(i, j);
+                break;
+            case ROOM_WALL:
+                GenerateRoomWallObject(i, j);
+                break;
+            case DEAD_END:
+                GenerateDeadEndObject(i, j);
+                    break;
+            default:
+                break;
+            }
         }
     }
 }
 
-void AUnrealProjectGameMode::SpawnEnemy()
+void AUnrealProjectGameMode::GenerateDeadEndObject(int x, int y)
+{
+    FRotator ObjectRotation = FRotator::ZeroRotator;
+    FVector ObjectLocation = { MazeX + x * ModuleSize, MazeY + y * ModuleSize, 50 };
+
+    if (Grid[XYToIndex(x, y - 1)] == GROUND)
+    {
+        ObjectRotation.Yaw = 0;
+        ObjectLocation.Y += ModuleSize / 2;
+    }
+    else if (Grid[XYToIndex(x, y + 1)] == GROUND)
+    {
+        ObjectRotation.Yaw = 180;
+        ObjectLocation.Y -= ModuleSize / 2;
+    }
+    else if (Grid[XYToIndex(x - 1, y)] == GROUND)
+    {
+        ObjectRotation.Yaw = 90;
+        ObjectLocation.X += ModuleSize / 2;
+    }
+    else
+    {
+        ObjectRotation.Yaw = -90;
+        ObjectLocation.X -= ModuleSize / 2;
+    }
+
+    PlaceBigObject(FTransform(ObjectRotation, ObjectLocation));
+}
+
+void AUnrealProjectGameMode::GenerateRoomMiddleObject(int x, int y)
+{
+    const auto Size = FMath::RandRange(0, 9);
+    if(Size < 3)
+    {
+        FRotator ObjectRotation = FRotator::ZeroRotator;
+        ObjectRotation.Yaw = FMath::RandRange(0, 379);
+        const FTransform ObjectTransform = { ObjectRotation, { MazeX + x * ModuleSize, MazeY + y * ModuleSize, 50 } };
+
+        if (Size == 0)
+        {
+            PlaceBigObject(ObjectTransform);
+        }
+        else
+        {
+            PlaceSmallObject(ObjectTransform);
+        }
+    }
+}
+
+void AUnrealProjectGameMode::GenerateRoomWallObject(int x, int y)
+{
+    const auto Size = FMath::RandRange(0, 9);
+    if (FMath::RandRange(0, 9) == 0)
+    {
+        FRotator    ObjectRotation = FRotator::ZeroRotator;
+        FVector     ObjectLocation = { MazeX + x * ModuleSize, MazeY + y * ModuleSize, 50 };
+
+        if (Grid[XYToIndex(x, y - 1)] == WALL)
+        {
+            ObjectRotation.Yaw = -90;
+            ObjectLocation.Y -= ModuleSize/2;
+        }
+        else if (Grid[XYToIndex(x, y + 1)] == WALL)
+        {
+            ObjectRotation.Yaw = 90;
+            ObjectLocation.Y += ModuleSize/2;
+        }
+        else if (Grid[XYToIndex(x - 1, y)] == WALL)
+        {
+            ObjectRotation.Yaw = 0;
+            ObjectLocation.X -= ModuleSize/2;
+        }
+        else
+        {
+            ObjectRotation.Yaw = 180;
+            ObjectLocation.X += ModuleSize/2;
+        }
+
+        const FTransform ObjectTransform = { ObjectRotation, ObjectLocation };
+        PlaceBigObject(ObjectTransform);
+    }
+}
+
+void AUnrealProjectGameMode::PlaceBigObject(FTransform Transform)
+{
+    if(ObjectsComposition.Num() > 0)
+    {
+        const auto Type = FMath::RandRange(0, ObjectsComposition.Num() - 1);
+
+        FActorSpawnParameters SpawnParameters;
+        SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        GetWorld()->SpawnActor(ObjectsComposition[Type], &Transform, SpawnParameters);
+    }
+}
+
+void AUnrealProjectGameMode::PlaceSmallObject(FTransform Transform)
+{
+    if (SimpleObjects.Num() > 0)
+    {
+        const auto Type = FMath::RandRange(0, SimpleObjects.Num() - 1);
+
+        FActorSpawnParameters SpawnParameters;
+        SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        GetWorld()->SpawnActor(SimpleObjects[Type], &Transform, SpawnParameters);
+    }
+}
+
+void AUnrealProjectGameMode::SpawnEnemy() const
 {
     bool bSpawned = false;
 
@@ -869,7 +999,8 @@ void AUnrealProjectGameMode::SpawnEnemy()
         const int EnemyX = FMath::RandRange(0, Width - 1);
         const int EnemyY = FMath::RandRange(0, Height - 1);
 
-        if(Grid[XYToIndex(EnemyX, EnemyY)] == GROUND && FVector2D::Distance({ (float)EnemyX * ModuleSize, (float)EnemyY * ModuleSize}, { GetSpawnLocation().X, GetSpawnLocation().Y }) < MinEnemySpawnDistanceToPlayer)
+
+        if(Grid[XYToIndex(EnemyX, EnemyY)] == GROUND && FVector2D::Distance({ (float)EnemyX, (float)EnemyY }, { GetSpawnLocation().X, GetSpawnLocation().Y }) > MinEnemySpawnDistanceToPlayer)
         {
             FActorSpawnParameters SpawnParameters;
             SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

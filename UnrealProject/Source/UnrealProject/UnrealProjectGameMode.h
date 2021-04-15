@@ -31,6 +31,15 @@ enum EModuleType
 	DOOR_RIGHT
 };
 
+UENUM()
+enum EObjectPlacement
+{
+	ROOM_MIDDLE,
+	ROOM_WALL,
+	DEAD_END,
+	EMPTY
+};
+
 class UMazeRoom;
 UCLASS(minimalapi)
 class AUnrealProjectGameMode : public AGameModeBase
@@ -94,13 +103,18 @@ protected:
 	TSubclassOf<AItem>	GetItemType(int index) const;
 
 	void	GenerateObjects();
+	void	GenerateDeadEndObject(int x, int y);
+	void	GenerateRoomMiddleObject(int x, int y);
+	void	GenerateRoomWallObject(int x, int y);
+	void	PlaceBigObject(FTransform Transform);
+	void	PlaceSmallObject(FTransform Transform);
 
-	void	SpawnEnemy();
+	void	SpawnEnemy() const;
 
 	int*	Grid;
 	int*	RoomsGrid;
 	int*	BonusesGrid;
-	int*	ObjectsGrid; // eligible objects cases
+	EObjectPlacement*	ObjectsGrid; // eligible objects cases
 	TArray<FVector2D>	LightsLocation;
 
 	LogicItens* NeededItems;
@@ -136,59 +150,65 @@ protected:
 	int	ModuleSize = 300;
 
 	UPROPERTY(EditAnywhere)
-	float	MinEnemySpawnDistanceToPlayer = 1000.f;
+	float	MinEnemySpawnDistanceToPlayer = 12.f;
 
 	/* Enemy */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 	TSubclassOf<class AEnemyCharacter> EnemyType = nullptr;
 
 	/* Spawn */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 	TSubclassOf<class AEndDoor> EndDoorType = nullptr;
 
 	/* Items */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 		TSubclassOf<AItem> Item1Type = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 		TSubclassOf<AItem> Item2Type = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 		TSubclassOf<AItem> Item3Type = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 		TSubclassOf<AItem> Item4Type = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 		TSubclassOf<AItem> Item5Type = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 		TSubclassOf<AItem> Item6Type = nullptr;
 
 	/* Maze modules */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 	TSubclassOf<class AMazeModule> LineModule = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Subclasses")
 	TSubclassOf<class AMazeModule> TurnModule = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 	TSubclassOf<class AMazeModule> TModule = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 	TSubclassOf<class AMazeModule> DeadEndModule = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 	TSubclassOf<class AMazeModule> CrossroadsModule = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 	TSubclassOf<class AMazeModule> SimpleWall = nullptr;
 
 	/* Light */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 	TSubclassOf<class ANeon> NeonType = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
 	TSubclassOf<class ALightButton> SwitchType = nullptr;
+
+	/* Object */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
+	TArray<TSubclassOf<class AObjectsComposition>> ObjectsComposition;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subclasses")
+	TArray<TSubclassOf<class ASimpleObject>> SimpleObjects;
 
 	UPROPERTY(VisibleAnywhere)
 	TArray<UMazeRoom*>	Rooms;
