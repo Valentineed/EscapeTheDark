@@ -360,9 +360,9 @@ void AUnrealProjectCharacter::ShakeMove()
 		{
 			SoundBreathe->Play();
 		}
-		if (SoundWalk->IsPlaying())
+		if (SoundRespirationWalk->IsPlaying())
 		{
-			SoundWalk->Stop();
+			SoundRespirationWalk->Stop();
 		}
 		if (SoundWalk->IsPlaying())
 		{
