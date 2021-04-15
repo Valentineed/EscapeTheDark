@@ -69,7 +69,6 @@ bool UMazeRoom::GenerateRoom()
 
 void UMazeRoom::CreateRoom(const int x, const int y)
 {
-
     for(int i = 0; i < RoomWidth; i++)
     {
         for(int j = 0; j < RoomHeight; j++)
