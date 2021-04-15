@@ -211,7 +211,7 @@ void AUnrealProjectGameMode::CreateModules() const
                     {
                         ModuleRotation.Yaw = -90;
                     }
-                    ObjectsGrid[XYToIndex(jWidth, iHeight - 1)] = DEAD_END;
+                    ObjectsGrid[XYToIndex(jWidth, iHeight)] = DEAD_END;
                     ModuleClass = DeadEndModule;
                 }
                 else if (WallsCount == 0) // Crossroad
@@ -890,22 +890,22 @@ void AUnrealProjectGameMode::GenerateDeadEndObject(int x, int y)
 
     if (Grid[XYToIndex(x, y - 1)] == GROUND)
     {
-        ObjectRotation.Yaw = 0;
+        ObjectRotation.Yaw = 90;
         ObjectLocation.Y += ModuleSize / 2;
     }
     else if (Grid[XYToIndex(x, y + 1)] == GROUND)
     {
-        ObjectRotation.Yaw = 180;
+        ObjectRotation.Yaw = -90;
         ObjectLocation.Y -= ModuleSize / 2;
     }
     else if (Grid[XYToIndex(x - 1, y)] == GROUND)
     {
-        ObjectRotation.Yaw = 90;
+        ObjectRotation.Yaw = 0;
         ObjectLocation.X += ModuleSize / 2;
     }
     else
     {
-        ObjectRotation.Yaw = -90;
+        ObjectRotation.Yaw = 180;
         ObjectLocation.X -= ModuleSize / 2;
     }
 
