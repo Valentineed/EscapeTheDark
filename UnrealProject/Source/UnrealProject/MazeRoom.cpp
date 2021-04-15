@@ -74,13 +74,11 @@ void UMazeRoom::CreateRoom(const int x, const int y)
     {
         for(int j = 0; j < RoomHeight; j++)
         {
-            //if(RoomWalls[GameMode->XYToIndex(i, j)] == ROOM_GROUND)
-            if(true)
-            {
-                GameMode->Grid[GameMode->XYToIndex(i + x, j + y)] = GROUND;
-                GameMode->RoomsGrid[GameMode->XYToIndex(i + x, j + y)] = RoomIndex;
-                GameMode->ObjectsGrid[GameMode->XYToIndex(i + x, j + y)] = 2;
-            }
+            GameMode->Grid[GameMode->XYToIndex(i + x, j + y)] = GROUND;
+            GameMode->RoomsGrid[GameMode->XYToIndex(i + x, j + y)] = RoomIndex;
+
+            if(RoomHeight > 1 && RoomWidth > 1)
+                GameMode->ObjectsGrid[GameMode->XYToIndex(i + x, j + y)] = ROOM_WALL;
         }
     }
 

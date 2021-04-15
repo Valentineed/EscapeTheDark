@@ -19,4 +19,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USceneComponent* Root = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UChildActorComponent* Matches = nullptr;
 };
