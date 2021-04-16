@@ -20,7 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWin);
 
 class LogicItens;
 UENUM()
-enum EModuleType
+enum EModuleTypeMaze
 {
 	GROUND,
 	WALL
@@ -80,7 +80,7 @@ protected:
     int		IsInBounds(int x, int y) const;
     void	Visit(int x, int y) const;
 
-	int		NumberOfWalls(int x, int y, const EModuleType& ModuleType) const;
+	int		NumberOfWalls(int x, int y, const EModuleTypeMaze& ModuleType) const;
 	void	BreakDeadEndWall(int x, int y) const;
 	void	BreakWall(int x, int y) const;
 

@@ -340,7 +340,7 @@ void AUnrealProjectGameMode::Visit(int x, int y) const
     }
 }
 
-int AUnrealProjectGameMode::NumberOfWalls(const int x, const int y, const EModuleType& ModuleType) const
+int AUnrealProjectGameMode::NumberOfWalls(const int x, const int y, const EModuleTypeMaze& ModuleType) const
 {
     int WallsCount = 0;
 
