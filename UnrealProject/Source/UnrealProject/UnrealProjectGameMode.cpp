@@ -629,13 +629,21 @@ void AUnrealProjectGameMode::PlaceRoomLights()
 
         FRotator Rotation = FRotator::ZeroRotator;
 
-        if(Room->CurrentX > 0)
+        bool bFirstValidPlace = true;
+
+
+
+        for (int j = 0; j < Room->RoomHeight; j++) // Left wall
         {
-            for (int j = 0; j < Room->RoomHeight; j++) // Left wall
+            if (Grid[XYToIndex(Room->CurrentX + Room->RoomWidth, Room->CurrentY + j)] == WALL) // Valid door
             {
-                if (Grid[XYToIndex(Room->CurrentX - 1, Room->CurrentY + j)] == WALL) // Valid door
+                if (bFirstValidPlace)
                 {
-                    const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX - 0.5f) * ModuleSize, MazeY + (Room->CurrentY + j) * ModuleSize, SwitchHeight });
+                    bFirstValidPlace = false;
+                }
+                else
+                {
+                    const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX + Room->RoomWidth - 0.5f) * ModuleSize, MazeY + (Room->CurrentY + j) * ModuleSize, SwitchHeight });
 
                     Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
 
@@ -646,13 +654,20 @@ void AUnrealProjectGameMode::PlaceRoomLights()
 
         for (int j = 0; j < Room->RoomHeight; j++) // Left wall
         {
-            if (Grid[XYToIndex(Room->CurrentX + Room->RoomWidth, Room->CurrentY + j)] == WALL) // Valid door
+            if (Grid[XYToIndex(Room->CurrentX - 1, Room->CurrentY + j)] == WALL) // Valid door
             {
-                const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX + Room->RoomWidth - 0.5f) * ModuleSize, MazeY + (Room->CurrentY + j) * ModuleSize, SwitchHeight });
+                if(bFirstValidPlace)
+                {
+                    bFirstValidPlace = false;
+                }
+                else
+                {
+                    const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX - 0.5f) * ModuleSize, MazeY + (Room->CurrentY + j) * ModuleSize, SwitchHeight });
 
-                Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
+                    Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
 
-                break;
+                    break;
+                }
             }
         }
 
@@ -660,11 +675,18 @@ void AUnrealProjectGameMode::PlaceRoomLights()
         {
             if (Grid[XYToIndex(Room->CurrentX + j, Room->CurrentY - 1)] == WALL) // Valid door
             {
-                const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX + j) * ModuleSize, MazeY + (Room->CurrentY - 0.5f) * ModuleSize, SwitchHeight });
+                if (bFirstValidPlace)
+                {
+                    bFirstValidPlace = false;
+                }
+                else
+                {
+                    const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX + j) * ModuleSize, MazeY + (Room->CurrentY - 0.5f) * ModuleSize, SwitchHeight });
 
-                Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
+                    Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
 
-                break;
+                    break;
+                }
             }
         }
 
@@ -672,11 +694,18 @@ void AUnrealProjectGameMode::PlaceRoomLights()
         {
             if (Grid[XYToIndex(Room->CurrentX + j, Room->CurrentY + Room->RoomHeight)] == WALL) // Valid door
             {
-                const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX + j) * ModuleSize, MazeY + (Room->CurrentY + Room->RoomHeight - 0.5f) * ModuleSize, SwitchHeight });
+                if (bFirstValidPlace)
+                {
+                    bFirstValidPlace = false;
+                }
+                else
+                {
+                    const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX + j) * ModuleSize, MazeY + (Room->CurrentY + Room->RoomHeight - 0.5f) * ModuleSize, SwitchHeight });
 
-                Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
+                    Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
 
-                break;
+                    break;
+                }
             }
         }
 
@@ -694,7 +723,6 @@ void AUnrealProjectGameMode::GenerateItems()
 {
     TArray<AActor*> Compositions;
     UGameplayStatics::GetAllActorsOfClass(this, AObjectsComposition::StaticClass(), Compositions);
-    UE_LOG(LogTemp, Warning, TEXT("Objects : %d"), (int)Compositions.Num());
 
     for(int i = 0; i < 6; i++)
     {
@@ -713,23 +741,6 @@ void AUnrealProjectGameMode::GenerateItems()
                 bItemPlaced = true;
             }
 
-            //const int RoomIndex = FMath::RandRange(1, Rooms.Num() - 1);
-
-            //if(Rooms[RoomIndex]->ItemCount < MaxItemPerRoom || SafeIncrement > 10)
-            //{
-            //    if(!bItemPlaced)
-            //    {
-            //        const int ItemX = Rooms[RoomIndex]->CurrentX + FMath::RandRange(0, Rooms[RoomIndex]->RoomWidth - 1);
-            //        const int ItemY = Rooms[RoomIndex]->CurrentY + FMath::RandRange(0, Rooms[RoomIndex]->RoomHeight - 1);
-
-            //        if(BonusesGrid[XYToIndex(ItemX, ItemY)] == 0)
-            //        {
-            //            PlaceItem(ItemX, ItemY, i);
-            //            bItemPlaced = true;
-            //            Rooms[RoomIndex]->ItemCount++;
-            //        }
-            //    }
-            //}
             SafeIncrement++;
         }
     }
@@ -807,7 +818,7 @@ void AUnrealProjectGameMode::GenerateObjects()
 void AUnrealProjectGameMode::GenerateDeadEndObject(int x, int y)
 {
     FRotator ObjectRotation = FRotator::ZeroRotator;
-    FVector ObjectLocation = { MazeX + x * ModuleSize, MazeY + y * ModuleSize, 50 };
+    FVector ObjectLocation = { MazeX + x * ModuleSize, MazeY + y * ModuleSize, -50 };
 
     if (Grid[XYToIndex(x, y - 1)] == GROUND)
     {
@@ -840,7 +851,7 @@ void AUnrealProjectGameMode::GenerateRoomMiddleObject(int x, int y)
     {
         FRotator ObjectRotation = FRotator::ZeroRotator;
         ObjectRotation.Yaw = FMath::RandRange(0, 379);
-        const FTransform ObjectTransform = { ObjectRotation, { MazeX + x * ModuleSize, MazeY + y * ModuleSize, 50 } };
+        const FTransform ObjectTransform = { ObjectRotation, { MazeX + x * ModuleSize, MazeY + y * ModuleSize, -50 } };
 
         if (Size == 0)
         {
@@ -859,7 +870,7 @@ void AUnrealProjectGameMode::GenerateRoomWallObject(int x, int y)
     if (FMath::RandRange(0, 9) == 0)
     {
         FRotator    ObjectRotation = FRotator::ZeroRotator;
-        FVector     ObjectLocation = { MazeX + x * ModuleSize, MazeY + y * ModuleSize, 50 };
+        FVector     ObjectLocation = { MazeX + x * ModuleSize, MazeY + y * ModuleSize, -50 };
 
         if (Grid[XYToIndex(x, y - 1)] == WALL)
         {
@@ -926,7 +937,7 @@ void AUnrealProjectGameMode::SpawnEnemy() const
             FActorSpawnParameters SpawnParameters;
             SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-            const FTransform Transform(FRotator::ZeroRotator, FVector{ MazeX + EnemyX * ModuleSize, MazeY + EnemyY * ModuleSize, 50 });
+            const FTransform Transform(FRotator::ZeroRotator, FVector{ MazeX + EnemyX * ModuleSize, MazeY + EnemyY * ModuleSize, 0 });
 
             GetWorld()->SpawnActor(EnemyType, &Transform, SpawnParameters);
 

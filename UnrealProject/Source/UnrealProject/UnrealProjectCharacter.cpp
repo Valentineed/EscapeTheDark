@@ -145,14 +145,14 @@ void AUnrealProjectCharacter::BeginPlay()
 	if(GameMode)
 	{
 
-		const auto Spawn = GameMode->GetSpawnLocation() * GameMode->GetModuleSize();
-		UE_LOG(LogTemp, Warning, TEXT("Spawn Player %f : %f"), Spawn.X, Spawn.Y);
+		auto Spawn = GameMode->GetSpawnLocation() * GameMode->GetModuleSize();
+		Spawn.Z += 50;
 
 		SetActorLocation(Spawn);
 
 		const auto Rotation = UKismetMathLibrary::FindLookAtRotation(Spawn, GameMode->EndDoor->GetActorLocation());
 
-		this->SetActorRotation(Rotation);
+		GetController()->SetControlRotation(Rotation);
 	}
 	if(Ambient01)
 	{

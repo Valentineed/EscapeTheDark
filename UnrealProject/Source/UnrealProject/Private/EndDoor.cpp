@@ -26,10 +26,21 @@ void AEndDoor::BeginPlay()
 	Super::BeginPlay();
 	
 	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &AEndDoor::OnBeginOverlap);
+
+
+	AUnrealProjectGameMode* GameMode = Cast<AUnrealProjectGameMode>(UGameplayStatics::GetGameMode(this));
+
+	if (GameMode)
+	{
+		const float ModuleScale = GameMode->GetModuleSize() / 177;
+
+		MeshComponent->SetRelativeScale3D({ ModuleScale, ModuleScale, ModuleScale });
+		AddActorLocalOffset({ 0, 0, -50 });
+	}
 }
 
-void AEndDoor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AEndDoor::OnBeginOverlap(UPrimitiveComponent* , AActor* OtherActor,
+    UPrimitiveComponent* , int32 , bool , const FHitResult& )
 {
 	if(AUnrealProjectCharacter* Player = Cast<AUnrealProjectCharacter>(OtherActor))
 	{

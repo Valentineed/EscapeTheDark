@@ -27,7 +27,8 @@ void AMazeModule::BeginPlay()
 	{
 		const float ModuleScale = GameMode->GetModuleSize() / 100;
 
-		MeshComponent->SetRelativeScale3D({ ModuleScale, ModuleScale, 1 });
+		MeshComponent->SetRelativeScale3D({ ModuleScale, ModuleScale, ModuleScale });
+		AddActorLocalOffset({ 0, 0, -50 });
 	}
 	else
 	{
