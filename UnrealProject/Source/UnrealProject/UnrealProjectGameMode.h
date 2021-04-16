@@ -242,4 +242,10 @@ protected:
 	 */
 	UPROPERTY(EditAnywhere)
 	int		MaxItemPerRoom = 3;
+
+	/**
+	 * Probability of a an object to spawn on a valid case. 1 chance out of ObjectGenerationProbability to spawn.
+	 */
+	UPROPERTY(EditAnywhere)
+	int		ObjectGenerationProbability = 10;
 };
