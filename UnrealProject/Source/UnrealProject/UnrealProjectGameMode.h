@@ -23,12 +23,7 @@ UENUM()
 enum EModuleType
 {
 	GROUND,
-	WALL,
-	ROOM_GROUND,
-	DOOR_UP,
-	DOOR_DOWN,
-	DOOR_LEFT,
-	DOOR_RIGHT
+	WALL
 };
 
 UENUM()

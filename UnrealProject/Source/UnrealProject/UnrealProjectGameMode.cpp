@@ -399,6 +399,8 @@ void AUnrealProjectGameMode::BreakWall(const int x, const int y) const
 
 void AUnrealProjectGameMode::GenerateLights()
 {
+    PlaceRoomLights();
+
     for(int iHeight = 0; iHeight < Height; iHeight++)
     {
         for(int jWidth = 0; jWidth < Width; jWidth++)
@@ -416,8 +418,6 @@ void AUnrealProjectGameMode::GenerateLights()
             }
         }
     }
-
-    PlaceRoomLights();
 }
 
 void AUnrealProjectGameMode::SetupSpawn()
@@ -499,11 +499,6 @@ bool AUnrealProjectGameMode::IsRoom(int x, int y) const
 {
     if (Grid[XYToIndex(x, y)] != GROUND)
         return false;
-
-    if(RoomsGrid[XYToIndex(x, y)] > DOOR_UP)
-    {
-        return true;
-    }
 
     return false;
 }
