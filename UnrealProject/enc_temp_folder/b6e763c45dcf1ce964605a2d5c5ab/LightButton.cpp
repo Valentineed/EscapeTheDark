@@ -66,13 +66,12 @@ void ALightButton::ActiveLight()
 		if (CurrentNeon->IsVisible() == false)
 		{
 			CurrentNeon->ActiveLight();
-			
-			Mesh->AddWorldRotation(FRotator(180, 0, 0));
+			this->AddActorWorldRotation(FRotator(180, 0, 0));
 		}
 		else
 		{
 			CurrentNeon->DesactiveLight();
-			Mesh->AddWorldRotation(FRotator(180, 0, 0));
+			this->AddActorWorldRotation(FRotator(180, 0, 0));
 		}
 	    
 	}
