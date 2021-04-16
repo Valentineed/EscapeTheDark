@@ -61,21 +61,21 @@ void ALightButton::ActiveLight()
 {
 	SoundActiveButton->Play();
 
-	//for(ANeon* CurrentNeon : Neon)
-	//{
-	//	if (CurrentNeon->IsVisible() == false)
-	//	{
-	//		CurrentNeon->ActiveLight();
-	//		
-	//		Mesh->AddWorldRotation(FRotator(180, 0, 0));
-	//	}
-	//	else
-	//	{
-	//		CurrentNeon->DesactiveLight();
-	//		Mesh->AddWorldRotation(FRotator(180, 0, 0));
-	//	}
-	//    
-	//}
+	for(ANeon* CurrentNeon : Neon)
+	{
+		if (CurrentNeon->IsVisible() == false)
+		{
+			CurrentNeon->ActiveLight();
+			
+			//Mesh->AddWorldRotation(FRotator(180, 0, 0));
+		}
+		else
+		{
+			CurrentNeon->DesactiveLight();
+			//Mesh->AddWorldRotation(FRotator(180, 0, 0));
+		}
+	    
+	}
 }
 
 void ALightButton::AddNeon(ANeon* TheNeon)
