@@ -9,12 +9,6 @@ ASimpleObject::ASimpleObject()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("DefaultSceneRoot"));
+	RootComponent = StaticMeshComponent;
 }
-
-// Called when the game starts or when spawned
-void ASimpleObject::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-

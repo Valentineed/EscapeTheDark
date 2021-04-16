@@ -15,6 +15,12 @@ public:
 	// Sets default values for this actor's properties
 	AObjectsComposition();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USceneComponent* ItemPosition = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCanHoldItem = true;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

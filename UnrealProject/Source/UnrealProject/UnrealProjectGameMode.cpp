@@ -35,7 +35,6 @@ AUnrealProjectGameMode::AUnrealProjectGameMode() : Super()
 
     Grid = new int[Width * Height];
     RoomsGrid = new int[Width * Height];
-    BonusesGrid = new int[Width * Height];
     ObjectsGrid = new EObjectPlacement[Width * Height];
 
     NeededItems = new LogicItens;
@@ -59,24 +58,20 @@ void AUnrealProjectGameMode::BeginPlay()
     auto TempRooms = Rooms;
     for(int i = TempRooms.Num() - 1; i >= 0; i--)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Generating Room"));
         if(!TempRooms[i]->GenerateRoom())
         {
-            UE_LOG(LogTemp, Warning, TEXT("Unable to place Room"));
             TempRooms.RemoveAt(i);
         }
     }
     Rooms = TempRooms;
 
-    GenerateDoors();
-
     CreateModules();
-
-    GenerateItems();
 
     GenerateLights();
 
     GenerateObjects();
+
+    GenerateItems();
 
     SetupSpawn();
 
@@ -218,9 +213,9 @@ void AUnrealProjectGameMode::CreateModules() const
                 {
                     ModuleClass = CrossroadsModule;
 
-                    if(RoomsGrid[XYToIndex(jWidth, iHeight)] != 0) // Room
+                    if(ObjectsGrid[XYToIndex(jWidth, iHeight)] == ROOM_WALL)
                     {
-                        ObjectsGrid[XYToIndex(jWidth, iHeight)] = ROOM_MIDDLE;
+                        ObjectsGrid[XYToIndex(jWidth, iHeight)] = EMPTY;
                     }
                 }
 
@@ -245,7 +240,6 @@ void AUnrealProjectGameMode::ResetGrid() const
     {
         Grid[i] = WALL;
         RoomsGrid[i] = -1;
-        BonusesGrid[i] = 0;
         ObjectsGrid[i] = EMPTY;
     }
 }
@@ -495,101 +489,6 @@ void AUnrealProjectGameMode::SetupSpawn()
     EndDoor = Cast<AEndDoor>(GetWorld()->SpawnActor(EndDoorType, &Transform, SpawnParameters));
 }
 
-void AUnrealProjectGameMode::GenerateDoors()
-{
-
-    for(const auto& Room : Rooms)
-    {
-        //int DoorCount = 0;
-        //if(Room->CurrentX > 0)
-        //{
-        //    bool bDoorFound = false;
-        //    for (int j = 0; j < Room->RoomHeight; j++) // Left wall
-        //    {
-        //        if (Grid[XYToIndex(Room->CurrentX - 1, Room->CurrentY + j)] == GROUND) // Valid door
-        //        {
-        //            if (bDoorFound)
-        //            {
-
-        //                UE_LOG(LogTemp, Warning, TEXT("Creating Wall"));
-        //                CreateWall(FTransform(FRotator(0, -90, 0), { MazeX + Room->CurrentX * ModuleSize, MazeY + (Room->CurrentY + j) * ModuleSize, 0 }));
-        //            }
-        //            else
-        //            {
-        //                RoomsGrid[XYToIndex(Room->CurrentX, Room->CurrentY + j)] = DOOR_LEFT;
-
-        //                DoorCount++;
-        //                bDoorFound = true;
-        //            }
-        //        }
-        //    }
-        //}
-
-        //for (int j = 0; j < Room->RoomHeight; j++) // Right wall
-        //{
-        //    bool bDoorFound = false;
-        //    const int RoomUpX = Room->CurrentX + Room->RoomWidth;
-        //    if (Grid[XYToIndex(RoomUpX + 1, Room->CurrentY + j)] == GROUND) // Valid door
-        //    {
-        //        RoomsGrid[XYToIndex(RoomUpX , Room->CurrentY + j)] = DOOR_RIGHT;
-
-        //        DoorCount++;
-        //        bDoorFound = true;
-        //    }
-
-        //    if (bDoorFound)
-        //        break;
-        //}
-
-        //for (int j = 0; j < Room->RoomWidth; j++) // Down wall
-        //{
-        //    bool bDoorFound = false;
-        //    if (Grid[XYToIndex(Room->CurrentX + j, Room->CurrentY - 1)] == GROUND) // Valid door
-        //    {
-        //        RoomsGrid[XYToIndex(Room->CurrentX + j, Room->CurrentY )] = DOOR_DOWN;
-
-        //        DoorCount++;
-        //        bDoorFound = true;
-        //    }
-
-        //    if (bDoorFound)
-        //        break;
-        //}
-
-        //for (int j = 0; j < Room->RoomWidth; j++) // Up wall
-        //{
-        //    bool bDoorFound = false;
-        //    const int RoomUpY = Room->CurrentY + Room->RoomHeight;
-
-        //    if (Grid[XYToIndex(Room->CurrentX + j, RoomUpY + 1)] == GROUND) // Valid door
-        //    {
-        //        RoomsGrid[XYToIndex(Room->CurrentX + j, RoomUpY)] = DOOR_UP;
-
-        //        DoorCount++;
-        //        bDoorFound = true;
-        //    }
-
-        //    if (bDoorFound)
-        //        break;
-        //}
-
-        //Room->DoorCount = DoorCount;
-
-        //if(DoorCount == 0)
-        //{
-        //    UE_LOG(LogTemp, Error, TEXT("A Room was created without a door"));
-        //}
-    }
-}
-
-void AUnrealProjectGameMode::CreateWall(FTransform Transform) const
-{
-    FActorSpawnParameters SpawnParameters;
-    SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-    GetWorld()->SpawnActor(SimpleWall, &Transform, SpawnParameters);
-}
-
 bool AUnrealProjectGameMode::IsRoom(int x, int y) const
 {
     if (Grid[XYToIndex(x, y)] != GROUND)
@@ -793,30 +692,44 @@ void AUnrealProjectGameMode::PlaceRoomLights()
 
 void AUnrealProjectGameMode::GenerateItems()
 {
+    TArray<AActor*> Compositions;
+    UGameplayStatics::GetAllActorsOfClass(this, AObjectsComposition::StaticClass(), Compositions);
+    UE_LOG(LogTemp, Warning, TEXT("Objects : %d"), (int)Compositions.Num());
+
     for(int i = 0; i < 6; i++)
     {
         bool bItemPlaced = false;
         int SafeIncrement = 0;
-        while(!bItemPlaced)
+        while(!bItemPlaced && SafeIncrement < 100)
         {
-            UE_LOG(LogTemp, Warning, TEXT("item"));
-            const int RoomIndex = FMath::RandRange(1, Rooms.Num() - 1);
+            const int CompositionIndex = FMath::RandRange(1, Compositions.Num() - 1);
 
-            if(Rooms[RoomIndex]->ItemCount < MaxItemPerRoom || SafeIncrement > 10)
+            AObjectsComposition* Composition = Cast<AObjectsComposition>(Compositions[CompositionIndex]);
+
+            if(Composition && Composition->bCanHoldItem)
             {
-                if(!bItemPlaced)
-                {
-                    const int ItemX = Rooms[RoomIndex]->CurrentX + FMath::RandRange(0, Rooms[RoomIndex]->RoomWidth - 1);
-                    const int ItemY = Rooms[RoomIndex]->CurrentY + FMath::RandRange(0, Rooms[RoomIndex]->RoomHeight - 1);
-
-                    if(BonusesGrid[XYToIndex(ItemX, ItemY)] == 0)
-                    {
-                        PlaceItem(ItemX, ItemY, i);
-                        bItemPlaced = true;
-                        Rooms[RoomIndex]->ItemCount++;
-                    }
-                }
+                PlaceItem(Composition->ItemPosition->GetComponentLocation(), i);
+                Composition->bCanHoldItem = false;
+                bItemPlaced = true;
             }
+
+            //const int RoomIndex = FMath::RandRange(1, Rooms.Num() - 1);
+
+            //if(Rooms[RoomIndex]->ItemCount < MaxItemPerRoom || SafeIncrement > 10)
+            //{
+            //    if(!bItemPlaced)
+            //    {
+            //        const int ItemX = Rooms[RoomIndex]->CurrentX + FMath::RandRange(0, Rooms[RoomIndex]->RoomWidth - 1);
+            //        const int ItemY = Rooms[RoomIndex]->CurrentY + FMath::RandRange(0, Rooms[RoomIndex]->RoomHeight - 1);
+
+            //        if(BonusesGrid[XYToIndex(ItemX, ItemY)] == 0)
+            //        {
+            //            PlaceItem(ItemX, ItemY, i);
+            //            bItemPlaced = true;
+            //            Rooms[RoomIndex]->ItemCount++;
+            //        }
+            //    }
+            //}
             SafeIncrement++;
         }
     }
@@ -824,12 +737,20 @@ void AUnrealProjectGameMode::GenerateItems()
 
 void AUnrealProjectGameMode::PlaceItem(const int x, const int y, const int Type) const
 {
-    BonusesGrid[XYToIndex(x, y)] = Type;
-
     FActorSpawnParameters SpawnParameters;
     SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
     const FTransform Transform(FRotator::ZeroRotator, FVector{ MazeX + x * ModuleSize, MazeY + y * ModuleSize, 50 });
+
+    GetWorld()->SpawnActor(GetItemType(Type + 1), &Transform, SpawnParameters);
+}
+
+void AUnrealProjectGameMode::PlaceItem(FVector Location, int Type) const
+{
+
+    FActorSpawnParameters SpawnParameters;
+    SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    const FTransform Transform(FRotator::ZeroRotator, Location);
 
     GetWorld()->SpawnActor(GetItemType(Type + 1), &Transform, SpawnParameters);
 }
@@ -914,7 +835,7 @@ void AUnrealProjectGameMode::GenerateDeadEndObject(int x, int y)
 
 void AUnrealProjectGameMode::GenerateRoomMiddleObject(int x, int y)
 {
-    const auto Size = FMath::RandRange(0, 9);
+    const auto Size = FMath::RandRange(0, 5);
     if(Size < 3)
     {
         FRotator ObjectRotation = FRotator::ZeroRotator;
@@ -934,7 +855,7 @@ void AUnrealProjectGameMode::GenerateRoomMiddleObject(int x, int y)
 
 void AUnrealProjectGameMode::GenerateRoomWallObject(int x, int y)
 {
-    const auto Size = FMath::RandRange(0, 9);
+    const auto Size = FMath::RandRange(0, 5);
     if (FMath::RandRange(0, 9) == 0)
     {
         FRotator    ObjectRotation = FRotator::ZeroRotator;
@@ -1000,7 +921,7 @@ void AUnrealProjectGameMode::SpawnEnemy() const
         const int EnemyY = FMath::RandRange(0, Height - 1);
 
 
-        if(Grid[XYToIndex(EnemyX, EnemyY)] == GROUND && FVector2D::Distance({ (float)EnemyX, (float)EnemyY }, { GetSpawnLocation().X, GetSpawnLocation().Y }) > MinEnemySpawnDistanceToPlayer)
+        if(Grid[XYToIndex(EnemyX, EnemyY)] == GROUND && ObjectsGrid[XYToIndex(EnemyX, EnemyY)] == EMPTY && FVector2D::Distance({ (float)EnemyX, (float)EnemyY }, { GetSpawnLocation().X, GetSpawnLocation().Y }) > MinEnemySpawnDistanceToPlayer)
         {
             FActorSpawnParameters SpawnParameters;
             SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -1042,4 +963,9 @@ void AUnrealProjectGameMode::CheckWinConditions(AUnrealProjectCharacter* Player)
 FVector AUnrealProjectGameMode::GetSpawnLocation() const
 {
     return { float(Rooms[0]->CurrentX + Rooms[0]->RoomWidth / 2), float(Rooms[0]->CurrentY + Rooms[0]->RoomHeight / 2), 0 };
+}
+
+TArray<TSubclassOf<ASimpleObject>> AUnrealProjectGameMode::GetSimpleObjects()
+{
+    return SimpleObjects;
 }

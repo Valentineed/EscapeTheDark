@@ -67,6 +67,9 @@ public:
 
 	AEndDoor* EndDoor = nullptr;
 
+	UFUNCTION(BlueprintCallable)
+	TArray<TSubclassOf<class ASimpleObject>> GetSimpleObjects();
+
 	UPROPERTY(BlueprintAssignable)
 	FOnWin OnWin;
 
@@ -86,9 +89,6 @@ protected:
 	void	BreakDeadEndWall(int x, int y) const;
 	void	BreakWall(int x, int y) const;
 
-	void	GenerateDoors();
-	void	CreateWall(FTransform Transform) const;
-
 	void	GenerateLights();
 
 	void	SetupSpawn();
@@ -100,6 +100,7 @@ protected:
 
 	void	GenerateItems();
 	void	PlaceItem(int x, int y, int Type) const;
+	void	PlaceItem(FVector Transform, int Type) const;
 	TSubclassOf<AItem>	GetItemType(int index) const;
 
 	void	GenerateObjects();
@@ -113,7 +114,6 @@ protected:
 
 	int*	Grid;
 	int*	RoomsGrid;
-	int*	BonusesGrid;
 	EObjectPlacement*	ObjectsGrid; // eligible objects cases
 	TArray<FVector2D>	LightsLocation;
 

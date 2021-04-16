@@ -14,6 +14,10 @@ AObjectsComposition::AObjectsComposition()
 
 	Matches = CreateDefaultSubobject<UChildActorComponent>(FName("Matches"));
 	Matches->SetupAttachment(RootComponent);
+
+
+	ItemPosition = CreateDefaultSubobject<USceneComponent>(FName("ItemPosition"));
+	ItemPosition->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
