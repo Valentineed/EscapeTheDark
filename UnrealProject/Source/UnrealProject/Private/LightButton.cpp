@@ -59,10 +59,7 @@ void ALightButton::Tick(float DeltaTime)
 
 void ALightButton::ActiveLight()
 {
-	if (!SoundActiveButton->IsPlaying())
-	{
-		SoundActiveButton->Activate(true);
-	}
+	SoundActiveButton->Play();
 
 	for(ANeon* CurrentNeon : Neon)
 	{
