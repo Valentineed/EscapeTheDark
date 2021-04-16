@@ -562,22 +562,22 @@ void AUnrealProjectGameMode::PlaceCorridorSwitch(AActor* Light, int x, int y) co
             {
                 if(bIncrementRatio)
                 {
-                    Rotation.Yaw = 90;
+                    Rotation.Yaw = -90;
                 }
                 else
                 {
-                    
+                    Rotation.Yaw = 90;
                 }
             }
             else
             {
                 if (bIncrementRatio)
                 {
-
+                    Rotation.Yaw = 0;
                 }
                 else
                 {
-
+                    Rotation.Yaw = 180;
                 }
             }
 
@@ -643,6 +643,7 @@ void AUnrealProjectGameMode::PlaceRoomLights()
                 }
                 else
                 {
+                    Rotation.Yaw = -90; // good
                     const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX + Room->RoomWidth - 0.5f) * ModuleSize, MazeY + (Room->CurrentY + j) * ModuleSize, SwitchHeight });
 
                     Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
@@ -662,6 +663,7 @@ void AUnrealProjectGameMode::PlaceRoomLights()
                 }
                 else
                 {
+                    Rotation.Yaw = 90;
                     const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX - 0.5f) * ModuleSize, MazeY + (Room->CurrentY + j) * ModuleSize, SwitchHeight });
 
                     Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
@@ -681,6 +683,7 @@ void AUnrealProjectGameMode::PlaceRoomLights()
                 }
                 else
                 {
+                    Rotation.Yaw = 0;
                     const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX + j) * ModuleSize, MazeY + (Room->CurrentY - 0.5f) * ModuleSize, SwitchHeight });
 
                     Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
@@ -700,6 +703,7 @@ void AUnrealProjectGameMode::PlaceRoomLights()
                 }
                 else
                 {
+                    Rotation.Yaw = 180;
                     const FTransform Transform(Rotation, FVector{ MazeX + (Room->CurrentX + j) * ModuleSize, MazeY + (Room->CurrentY + Room->RoomHeight - 0.5f) * ModuleSize, SwitchHeight });
 
                     Switches.Add(Cast<ALightButton>(GetWorld()->SpawnActor(SwitchType, &Transform, SpawnParameters)));
