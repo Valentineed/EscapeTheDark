@@ -134,26 +134,35 @@ void AUnrealProjectCharacter::Tick(float DeltaSeconds)
 	ShakeMove();
 }
 
+void AUnrealProjectCharacter::SetSpawn()
+{
+	AUnrealProjectGameMode* GameMode = Cast<AUnrealProjectGameMode>(UGameplayStatics::GetGameMode(this));
+
+
+	if (GameMode)
+	{
+		auto Spawn = GameMode->GetSpawnLocation() * GameMode->GetModuleSize();
+		Spawn.Z += 50;
+
+		SetActorLocation(Spawn);
+
+		if (GameMode->EndDoor)
+		{
+			const auto Rotation = UKismetMathLibrary::FindLookAtRotation(Spawn, GameMode->EndDoor->GetActorLocation());
+
+			GetController()->SetControlRotation(Rotation);
+		}
+	}
+}
+
 void AUnrealProjectCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
-	AUnrealProjectGameMode* GameMode = Cast<AUnrealProjectGameMode>(UGameplayStatics::GetGameMode(this));
+	SetSpawn();
 
-	if(GameMode)
-	{
-
-		auto Spawn = GameMode->GetSpawnLocation() * GameMode->GetModuleSize();
-		Spawn.Z += 50;
-
-		SetActorLocation(Spawn);
-
-		const auto Rotation = UKismetMathLibrary::FindLookAtRotation(Spawn, GameMode->EndDoor->GetActorLocation());
-
-		GetController()->SetControlRotation(Rotation);
-	}
 	if(Ambient01)
 	{
 		Ambient01->Play();

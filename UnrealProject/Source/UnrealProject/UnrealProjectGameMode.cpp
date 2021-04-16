@@ -33,12 +33,6 @@ AUnrealProjectGameMode::AUnrealProjectGameMode() : Super()
     CrossroadsModule = AMazeModule::StaticClass();
     TModule = AMazeModule::StaticClass();
 
-    Grid = new int[Width * Height];
-    RoomsGrid = new int[Width * Height];
-    ObjectsGrid = new EObjectPlacement[Width * Height];
-
-    NeededItems = new LogicItens;
-
     Rooms.Reserve(5);
     Rooms.Add(CreateDefaultSubobject<UMazeRoom>(FName("Room0")));
     Rooms.Add(CreateDefaultSubobject<UMazeRoom>(FName("Room1")));
@@ -50,6 +44,12 @@ AUnrealProjectGameMode::AUnrealProjectGameMode() : Super()
 void AUnrealProjectGameMode::BeginPlay()
 {
     Super::BeginPlay();
+
+    Grid = new int[Width * Height];
+    RoomsGrid = new int[Width * Height];
+    ObjectsGrid = new EObjectPlacement[Width * Height];
+
+    NeededItems = new LogicItens;
 
     DrawRooms();
 
@@ -493,6 +493,13 @@ void AUnrealProjectGameMode::SetupSpawn()
 
 
     EndDoor = Cast<AEndDoor>(GetWorld()->SpawnActor(EndDoorType, &Transform, SpawnParameters));
+
+    AUnrealProjectCharacter* Character = Cast<AUnrealProjectCharacter>(UGameplayStatics::GetPlayerPawn(this, 0));
+
+    if(Character)
+    {
+        Character->SetSpawn();
+    }
 }
 
 bool AUnrealProjectGameMode::IsRoom(int x, int y) const
