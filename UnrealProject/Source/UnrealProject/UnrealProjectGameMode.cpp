@@ -878,22 +878,18 @@ void AUnrealProjectGameMode::GenerateRoomWallObject(int x, int y)
         if (Grid[XYToIndex(x, y - 1)] == WALL)
         {
             ObjectRotation.Yaw = -90;
-            ObjectLocation.Y -= ModuleSize/2;
         }
         else if (Grid[XYToIndex(x, y + 1)] == WALL)
         {
             ObjectRotation.Yaw = 90;
-            ObjectLocation.Y += ModuleSize/2;
         }
         else if (Grid[XYToIndex(x - 1, y)] == WALL)
         {
             ObjectRotation.Yaw = 0;
-            ObjectLocation.X -= ModuleSize/2;
         }
         else
         {
             ObjectRotation.Yaw = 180;
-            ObjectLocation.X += ModuleSize/2;
         }
 
         const FTransform ObjectTransform = { ObjectRotation, ObjectLocation };

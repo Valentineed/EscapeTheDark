@@ -2,6 +2,7 @@
 
 
 #include "EndDoor.h"
+#include "UnrealProject/Public/InteractiveObject.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UnrealProject/UnrealProjectCharacter.h"
@@ -19,6 +20,8 @@ AEndDoor::AEndDoor()
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(FName("BoxCollision"));
 	BoxCollision->SetupAttachment(RootComponent);
+
+	InterOBJ = CreateDefaultSubobject<UInteractiveObject>(TEXT("InteractiveOBJ"));
 }
 
 void AEndDoor::BeginPlay()

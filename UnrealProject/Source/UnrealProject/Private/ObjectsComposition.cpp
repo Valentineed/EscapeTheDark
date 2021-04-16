@@ -27,7 +27,7 @@ void AObjectsComposition::BeginPlay()
 
 	SetActorScale3D({ 0.4f, 0.4f, 0.4f });
 
-	if(FMath::RandRange(0, 2) > 0)
+	if(FMath::RandRange(0, 4) > 0)
 	{
 		if(Matches != nullptr && Matches->IsValidLowLevel())
 		    Matches->DestroyComponent();
