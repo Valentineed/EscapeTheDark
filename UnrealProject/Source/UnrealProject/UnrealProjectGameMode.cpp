@@ -224,9 +224,15 @@ void AUnrealProjectGameMode::CreateModules() const
                     FActorSpawnParameters SpawnParameters;
                     SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-                    const FTransform Transform(ModuleRotation, FVector{ MazeX + jWidth * ModuleSize, MazeY + iHeight * ModuleSize, 0 });
+                    FTransform Transform(ModuleRotation, FVector{ MazeX + jWidth * ModuleSize, MazeY + iHeight * ModuleSize, 0 });
 
                     GetWorld()->SpawnActor(ModuleClass, &Transform, SpawnParameters);
+
+
+
+                    Transform = FTransform{ FRotator::ZeroRotator, FVector{ MazeX + jWidth * ModuleSize, MazeY + iHeight * ModuleSize, 0 } };
+
+                    GetWorld()->SpawnActor(CrossroadsModule, &Transform, SpawnParameters);
                 }
             }
         }
