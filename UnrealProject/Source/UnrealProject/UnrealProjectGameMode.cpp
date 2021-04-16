@@ -224,9 +224,15 @@ void AUnrealProjectGameMode::CreateModules() const
                     FActorSpawnParameters SpawnParameters;
                     SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-                    const FTransform Transform(ModuleRotation, FVector{ MazeX + jWidth * ModuleSize, MazeY + iHeight * ModuleSize, 0 });
+                    FTransform Transform(ModuleRotation, FVector{ MazeX + jWidth * ModuleSize, MazeY + iHeight * ModuleSize, 0 });
 
                     GetWorld()->SpawnActor(ModuleClass, &Transform, SpawnParameters);
+
+
+
+                    Transform = FTransform{ FRotator::ZeroRotator, FVector{ MazeX + jWidth * ModuleSize, MazeY + iHeight * ModuleSize, 0 } };
+
+                    GetWorld()->SpawnActor(CrossroadsModule, &Transform, SpawnParameters);
                 }
             }
         }
@@ -850,28 +856,19 @@ void AUnrealProjectGameMode::GenerateDeadEndObject(int x, int y)
 
 void AUnrealProjectGameMode::GenerateRoomMiddleObject(int x, int y)
 {
-    const auto Size = FMath::RandRange(0, 5);
-    if(Size < 3)
+    if(FMath::RandRange(0, ObjectGenerationProbability) == 0)
     {
         FRotator ObjectRotation = FRotator::ZeroRotator;
         ObjectRotation.Yaw = FMath::RandRange(0, 379);
         const FTransform ObjectTransform = { ObjectRotation, { MazeX + x * ModuleSize, MazeY + y * ModuleSize, -50 } };
 
-        if (Size == 0)
-        {
-            PlaceBigObject(ObjectTransform);
-        }
-        else
-        {
-            PlaceSmallObject(ObjectTransform);
-        }
+        PlaceBigObject(ObjectTransform);
     }
 }
 
 void AUnrealProjectGameMode::GenerateRoomWallObject(int x, int y)
 {
-    const auto Size = FMath::RandRange(0, 5);
-    if (FMath::RandRange(0, 9) == 0)
+    if (FMath::RandRange(0, ObjectGenerationProbability) == 0)
     {
         FRotator    ObjectRotation = FRotator::ZeroRotator;
         FVector     ObjectLocation = { MazeX + x * ModuleSize, MazeY + y * ModuleSize, -50 };
