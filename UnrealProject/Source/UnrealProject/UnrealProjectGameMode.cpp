@@ -328,11 +328,11 @@ void AUnrealProjectGameMode::Visit(int x, int y) const
         }
     }
 
-    for(int i = 1; i < Height-1; i+=2)
+    for(int i = 2; i < Height-2; i+=3)
     {
-        for(int j = 1; j < Width-1; j+=2)
+        for(int j = 2; j < Width-2; j+=3)
         {
-            if(NumberOfWalls(i, j, GROUND) == 3)
+            if(NumberOfWalls(j, i, GROUND) == 3)
             {
                 BreakDeadEndWall(j, i);
             }
